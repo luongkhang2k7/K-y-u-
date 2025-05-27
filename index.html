@@ -332,6 +332,31 @@
       opacity: 1;
     }
   }
+    /* Star style */
+    .star {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle at center, #ffffff 0%, #cceeff 60%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 1;
+      filter: drop-shadow(0 0 3px #a0d8f7);
+      animation: star-float 1s ease forwards;
+      mix-blend-mode: screen;
+      z-index: 999;
+    }
+
+    @keyframes star-float {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--x), var(--y)) scale(0.2);
+        opacity: 0;
+      }
+    }
 </style>
 </head>
 <body>
@@ -770,6 +795,44 @@
       musicPlayer.click();
     }
   });
+  (function() {
+      const maxStars = 30;
+      let stars = [];
+
+      function createStar(x, y) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = x + 'px';
+        star.style.top = y + 'px';
+
+        // Random float direction and distance for animation
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = 50 + Math.random() * 50;
+        const translateX = Math.cos(angle) * distance + 'px';
+        const translateY = Math.sin(angle) * distance + 'px';
+
+        star.style.setProperty('--x', translateX);
+        star.style.setProperty('--y', translateY);
+
+        document.body.appendChild(star);
+
+        // Remove the star after animation ends
+        setTimeout(() => {
+          star.remove();
+          stars = stars.filter(s => s !== star);
+        }, 1000);
+
+        stars.push(star);
+        if (stars.length > maxStars) {
+          let oldStar = stars.shift();
+          if (oldStar) oldStar.remove();
+        }
+      }
+
+      window.addEventListener('mousemove', (e) => {
+        createStar(e.clientX, e.clientY);
+      });
+    })();
 </script>
 </body>
 </html>
